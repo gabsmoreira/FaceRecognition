@@ -16,15 +16,10 @@ while True:
         roi_gray = gray[y:y+h, x:x+w]
         roi_color = img[y:y+h, x:x+w]
         crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
-        '''gray_2 = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
-        circles = cv2.HoughCircles(gray_2,cv.CV_HOUGH_GRADIENT,1.5,100)
-        if circles is not None:
-            circles = np.round(circles[0, :]).astype("int")
-            for (x, y, r) in circles:
-                cv2.circle(crop_img, (x, y), r, (0, 255, 0), 4)
-                cv2.rectangle(crop_img, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)'''
+        height, width = img.shape[:2]
+        res = cv2.resize(crop_img,(height, height), interpolation = cv2.INTER_CUBIC)
     try:
-        cv2.imshow('Imagem Cortada',crop_img)
+        cv2.imshow('Imagem Cortada',res)
     except NameError:
         pass
     cv2.imshow('Imagem normal',img)
