@@ -1,12 +1,28 @@
 import numpy as np
 import cv2
 from cv2 import cv
+
+from time import time
+import os
+import scipy.misc
+import logging
+import matplotlib.pyplot as plt
+import sys
+
+
+
+
 face_cascade = cv2.CascadeClassifier('haarcascade_face.xml')
 
-
+name = raw_input("Name:")
+number_photos = int(input("Number of photos:"))
+i=0
+os.mkdir('db_{0}'.format(name))
+os.chdir('db_{0}'.format(name))
 
 cap = cv2.VideoCapture(0)
 while True:
+
     ret, img = cap.read()
     image =cv2.GaussianBlur(img,(5,5),10)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -15,11 +31,18 @@ while True:
         cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),2)
         roi_gray = gray[y:y+h, x:x+w]
         roi_color = img[y:y+h, x:x+w]
-        crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
+        crop_img = img[y:y+h, x:x+w]
         height, width = img.shape[:2]
         res = cv2.resize(crop_img,(height, height), interpolation = cv2.INTER_CUBIC)
+        rgb = cv2.cvtColor(res, cv2.COLOR_BGR2RGB)
+        i+=1
+
     try:
+        if i==number_photos + 1:
+            break
         cv2.imshow('Imagem Cortada',res)
+        string_photo = '{0}_{1}.jpg'.format(name,i)
+        scipy.misc.imsave(string_photo,rgb)
     except NameError:
         pass
     cv2.imshow('Imagem normal',img)
