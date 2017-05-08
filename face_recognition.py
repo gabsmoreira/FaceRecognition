@@ -1,17 +1,19 @@
+
 import numpy as np
 import cv2
 from cv2 import cv
-
 from time import time
 import os
 import scipy.misc
 import logging
-import matplotlib.pyplot as plt
 import sys
+import training as tr
 
 
+print(tr.getX(tr.getMatrix()))
 
 
+'''
 face_cascade = cv2.CascadeClassifier('haarcascade_face.xml')
 
 cap = cv2.VideoCapture(0)
@@ -49,3 +51,4 @@ while True:
         break
 cap.release()
 cv2.destroyAllWindows()
+'''
