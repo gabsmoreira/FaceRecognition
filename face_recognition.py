@@ -10,7 +10,8 @@ import sys
 import training as tr
 
 
-print(tr.getX(tr.getMatrix()))
+# print(tr.getX(tr.getMatrix()))
+tr.main()
 
 
 '''
