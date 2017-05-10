@@ -101,8 +101,10 @@ def trainSVM():
     print("done in %0.3fs" % (time() - t0))
     print("Best estimator found by grid search:")
     print(clf.best_estimator_)
+    return clf
 
-def predictFace(X_test_pca, y_test, target_names, y):
+def predictFace(X_test_pca, y_test, target_names, y, classifier = None):
+    clf = classifier
     # Quantitative evaluation of the model quality on the test set
     n_classes = y.shape[0]
 
@@ -120,5 +122,7 @@ def main():
     y = getY()
     X_train, X_test, y_train, y_test = splitTraining(X, y)
     X_train_pca, X_test_pca = computePCA(X_train, X_test)
-    trainSVM()
-    predictFace(X_test_pca, y_test, target_names, y)
+    clf = trainSVM()
+    predictFace(X_test_pca, y_test, target_names, y, clf)
+
+    ## Salvar clf em disco
