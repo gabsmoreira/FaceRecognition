@@ -69,13 +69,22 @@ def splitTraining(X, y):
 def computePCA(X_train, X_test):
     # Compute a PCA (eigenfaces) on the face dataset (treated as unlabeled
     # dataset): unsupervised feature extraction / dimensionality reduction
-    n_components = 90
+    n_components = 190
 
     print("Extracting the top %d eigenfaces from %d faces"
           % (n_components, len(X_train)))
     t0 = time()
-    # X_train.reshape(90, -1)
-    pca = PCA(n_components=n_components, svd_solver='randomized', whiten=True).fit(X_train)
+    lfw_people = fetch_lfw_people(min_faces_per_person=70, resize=0.4)
+
+    # introspect the images arrays to find the shapes (for plotting)
+    n_samples, h, w = lfw_people.images.shape
+    print(h, w)
+    # for machine learning we use the 2 data directly (as relative pixel
+    # positions info is ignored by this model)
+    Xlfw = lfw_people.data
+    print(Xlfw.shape)
+    # pca = PCA(n_components=n_components, svd_solver='randomized', whiten=True).fit(X_train)
+    pca = PCA(n_components=n_components, svd_solver='randomized', whiten=True).fit(Xlfw)
     print("done in %0.3fs" % (time() - t0))
 
     # eigenfaces = pca.components_.reshape((n_components, h, w))
@@ -115,7 +124,8 @@ def predictFace(X_test_pca, y_test, y, classifier = None):
 
 def main():
     matrix = getMatrix()
-    X = getX(matrix)
+    # X = getX(matrix)
+    X = matrix
     y = getY()
     X_train, X_test, y_train, y_test = splitTraining(X, y)
     X_train_pca, X_test_pca = computePCA(X_train, X_test)
