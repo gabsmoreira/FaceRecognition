@@ -16,18 +16,18 @@ from sklearn.metrics import confusion_matrix
 from sklearn.decomposition import PCA
 from sklearn.svm import SVC
 
-
+global target_names
+target_names = ["Leonardo","Borba","gabriel"] #all names the program will recognize
 
 def getMatrix():
-    name = ["Leonardo","Borba","gabriel"] #all names the program will recognize
-    mat = np.zeros(((len(name))*40,480*480))
+    mat = np.zeros(((len(target_names))*40,480*480))
     os.chdir("database")
 
     #Reading all images in person's database to begin training
-    for i in range(len(name)):
-        os.chdir('db_{0}'.format(name[i])) #db_name will be the folder with person's photos
+    for i in range(len(target_names)):
+        os.chdir('db_{0}'.format(target_names[i])) #db_name will be the folder with person's photos
         for j in range (1,41):
-            image = cv2.imread('{0}_{1}.jpg'.format(name[i],j))
+            image = cv2.imread('{0}_{1}.jpg'.format(target_names[i],j))
             image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             image_flat_gray = image_gray.flat
             mat[i*40+j-1] = image_flat_gray
@@ -49,20 +49,17 @@ def eigenfaces(mat):
 
 def getX(mat):
     pca = PCA(n_components=100, svd_solver='randomized',whiten=True).fit(mat)
-    X = []
-    name = ["Leonardo","Borba","gabriel"] #all names the program will recognize
-    for i in range(len(name)):
-        for j in range (40):
-            X.append(pca.transform(mat[i*40+j-1]))
+    X = np.zeros(((len(target_names))*40,480*480))
+    for i in range(len(target_names)):
+        for j in range(40):
+            X = pca.transform(mat)
     return X
 
 def getY():
-    target_names = ["Leonardo","Borba","gabriel"] #all names the program will recognize
-    y = []
+    y = np.zeros(((len(target_names))*40))
     #Setting one ID for each name
-    for i in range(len(target_names)): #For each name
-        for j in range(40): #For each photo
-            y.append(i) #Add an ID
+    for i in range(y.shape[0]):
+        y[i] = i//40
     return y
 
 def splitTraining(X, y):
@@ -72,12 +69,12 @@ def splitTraining(X, y):
 def computePCA(X_train, X_test):
     # Compute a PCA (eigenfaces) on the face dataset (treated as unlabeled
     # dataset): unsupervised feature extraction / dimensionality reduction
-    n_components = 150
+    n_components = 90
 
     print("Extracting the top %d eigenfaces from %d faces"
           % (n_components, len(X_train)))
     t0 = time()
-    X_train.reshape(90, -1)
+    # X_train.reshape(90, -1)
     pca = PCA(n_components=n_components, svd_solver='randomized', whiten=True).fit(X_train)
     print("done in %0.3fs" % (time() - t0))
 
@@ -90,7 +87,7 @@ def computePCA(X_train, X_test):
     print("done in %0.3fs" % (time() - t0))
     return X_train_pca, X_test_pca
 
-def trainSVM():
+def trainSVM(X_train_pca, y_train):
     # Train a SVM classification model
     print("Fitting the classifier to the training set")
     t0 = time()
@@ -103,10 +100,10 @@ def trainSVM():
     print(clf.best_estimator_)
     return clf
 
-def predictFace(X_test_pca, y_test, target_names, y, classifier = None):
+def predictFace(X_test_pca, y_test, y, classifier = None):
     clf = classifier
     # Quantitative evaluation of the model quality on the test set
-    n_classes = y.shape[0]
+    n_classes = len(target_names)
 
     print("Predicting people's names on the test set")
     t0 = time()
@@ -122,7 +119,7 @@ def main():
     y = getY()
     X_train, X_test, y_train, y_test = splitTraining(X, y)
     X_train_pca, X_test_pca = computePCA(X_train, X_test)
-    clf = trainSVM()
-    predictFace(X_test_pca, y_test, target_names, y, clf)
+    clf = trainSVM(X_train_pca, y_train)
+    predictFace(X_test_pca, y_test, y, clf)
 
     ## Salvar clf em disco
