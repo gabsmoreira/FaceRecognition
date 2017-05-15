@@ -6,6 +6,7 @@ import os
 import scipy.misc
 import matplotlib.pyplot as plt
 import sys
+import cPickle as pickle
 
 #Scikit-learn imports (machine learning in Python)
 from sklearn.model_selection import train_test_split
@@ -80,6 +81,7 @@ def computePCA(X_train, X_test):
     t0 = time()
     X_train_pca = pca.transform(X_train)
     X_test_pca = pca.transform(X_test)
+    print(X_test_pca)
     print("done in %0.3fs" % (time() - t0))
     return X_train_pca, X_test_pca
 
@@ -112,12 +114,14 @@ def predictFace(X_test_pca, y_test, y, classifier = None):
 def main():
     matrix = getMatrix()
     # X = getX(matrix)
-    eigenfaces(matrix)
     X = matrix
     y = getY()
     X_train, X_test, y_train, y_test = splitTraining(X, y)
     X_train_pca, X_test_pca = computePCA(X_train, X_test)
     clf = trainSVM(X_train_pca, y_train)
     predictFace(X_test_pca, y_test, y, clf)
+    f = open('clf.p', 'w')
+    pickle.dump(clf, f)
+    f.close()
 
 main()

@@ -7,10 +7,22 @@ import os
 import scipy.misc
 import logging
 import sys
-import training as tr
+import cPickle as pickle
+
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV
+from sklearn.datasets import fetch_lfw_people, load_digits
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+from sklearn.decomposition import PCA
+from sklearn.svm import SVC
 
 face_cascade = cv2.CascadeClassifier('haarcascade_face.xml')
 target_names = ["Borba","gabriel", "Leonardo"] #all names the program will recognize
+
+f = open('clf.p', 'r')
+clf = pickle.load(f)
+f.close()
 
 cap = cv2.VideoCapture(0)
 while True:
@@ -21,7 +33,7 @@ while True:
     faces = face_cascade.detectMultiScale(gray, 2, 5)
 
     #Text that appears next to the rectangle with the person's face_cascade
-    person_name = "Alguem"
+    person_name = "Someone..."
     fontFace = cv2.FONT_HERSHEY_SIMPLEX
     fontScale = 1
     font_color = (0,0,255)
@@ -34,14 +46,18 @@ while True:
         roi_color = img[y:y+h, x:x+w]
         crop_img = img[y:y+h, x:x+w]
         height, width = img.shape[:2]
-        res = cv2.resize(crop_img,(height, height), interpolation = cv2.INTER_CUBIC)
-        rgb = cv2.cvtColor(res, cv2.COLOR_BGR2RGB)
 
-    # try:
-    #     cv2.imshow('Imagem Cortada',res)
-    # except NameError:
-    #     pass
-    cv2.imshow('Imagem normal',img)
+        res = cv2.resize(crop_img,(height, height), interpolation = cv2.INTER_CUBIC)
+        res = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
+        res_flat = res.flat
+        # y_pred = clf.predict(res_flat)
+        # person_name = y_pred[0]
+
+    try:
+        cv2.imshow('Imagem Cortada', res)
+    except NameError:
+        pass
+    cv2.imshow('Imagem normal', img)
     k = cv2.waitKey(30) & 0xff
     if k == 27:
         break
