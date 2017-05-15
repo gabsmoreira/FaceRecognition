@@ -9,19 +9,14 @@ import logging
 import sys
 import training as tr
 
-
-# print(tr.getX(tr.getMatrix()))
-tr.main()
-
-
-'''
 face_cascade = cv2.CascadeClassifier('haarcascade_face.xml')
+target_names = ["Borba","gabriel", "Leonardo"] #all names the program will recognize
 
 cap = cv2.VideoCapture(0)
 while True:
 
     ret, img = cap.read()
-    image =cv2.GaussianBlur(img,(5,5),10)
+    image = cv2.GaussianBlur(img,(5,5),10)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray, 2, 5)
 
@@ -52,4 +47,3 @@ while True:
         break
 cap.release()
 cv2.destroyAllWindows()
-'''
