@@ -111,7 +111,7 @@ def predictFace(X_test_pca, y_test, y, classifier = None):
     print(classification_report(y_test, y_pred, target_names=target_names))
     print(confusion_matrix(y_test, y_pred, labels=range(n_classes)))
 
-def main():
+def main_training():
     matrix = getMatrix()
     # X = getX(matrix)
     X = matrix
@@ -123,5 +123,7 @@ def main():
     f = open('clf.p', 'w')
     pickle.dump(clf, f)
     f.close()
+    return X_test_pca, y_test, y, clf
 
-main()
+##main
+#3predictFace(X_test_pca, y_test, y, clf)
