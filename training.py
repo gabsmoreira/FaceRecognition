@@ -18,7 +18,15 @@ from sklearn.decomposition import PCA
 from sklearn.svm import SVC
 
 global target_names
-target_names = ["Borba","gabriel","Leonardo"] #all names the program will recognize
+def getTargetNames():
+    global target_names
+    target_names = [] #all names the program will recognize
+    for folder in os.listdir("database"):
+        if folder == "clf.p":
+            pass
+        else:
+            target_names.append(folder[3:])
+    return target_names
 
 def getMatrix():
     mat = np.zeros(((len(target_names))*40,480*480))
@@ -35,7 +43,6 @@ def getMatrix():
             if j==40:
                 os.chdir("../")
     return mat
-
 
 def eigenfaces(mat):
     pca = PCA(n_components=120, svd_solver='randomized',whiten=True).fit(mat)
@@ -83,7 +90,7 @@ def computePCA(X_train, X_test):
     X_test_pca = pca.transform(X_test)
     print(X_test_pca)
     print("done in %0.3fs" % (time() - t0))
-    return X_train_pca, X_test_pca
+    return X_train_pca, X_test_pca, pca
 
 def trainSVM(X_train_pca, y_train):
     # Train a SVM classification model
@@ -102,28 +109,29 @@ def predictFace(X_test_pca, y_test, y, classifier = None):
     clf = classifier
     # Quantitative evaluation of the model quality on the test set
     n_classes = len(target_names)
-
     print("Predicting people's names on the test set")
     t0 = time()
     y_pred = clf.predict(X_test_pca)
-    print("done in %0.3fs" % (time() - t0))
-
-    print(classification_report(y_test, y_pred, target_names=target_names))
-    print(confusion_matrix(y_test, y_pred, labels=range(n_classes)))
+    ##print("done in %0.3fs" % (time() - t0))
+    #print(classification_report(y_test, y_pred, target_names=target_names))
+    #print(confusion_matrix(y_test, y_pred, labels=range(n_classes)))
+    return target_names
 
 def main_training():
+    target_names = getTargetNames()
     matrix = getMatrix()
-    # X = getX(matrix)
     X = matrix
     y = getY()
     X_train, X_test, y_train, y_test = splitTraining(X, y)
-    X_train_pca, X_test_pca = computePCA(X_train, X_test)
+    X_train_pca, X_test_pca, pca = computePCA(X_train, X_test)
     clf = trainSVM(X_train_pca, y_train)
     predictFace(X_test_pca, y_test, y, clf)
-    f = open('clf.p', 'w')
-    pickle.dump(clf, f)
-    f.close()
-    return X_test_pca, y_test, y, clf
+    os.chdir("../")
 
-##main
-#3predictFace(X_test_pca, y_test, y, clf)
+    f = open('clf.p', 'w+')
+    p = open('pca.p','w+')
+
+    #pickle.dump(clf, f)
+    pickle.dump(clf, f)
+    pickle.dump(pca,p)
+    f.close()

@@ -10,11 +10,13 @@ import matplotlib.pyplot as plt
 import sys
 
 
+
 face_cascade = cv2.CascadeClassifier('haarcascade_face.xml')
 
 name = raw_input("Name:")
 number_photos = int(input("Number of photos:"))
 i=0
+os.chdir('database')
 os.mkdir('db_{0}'.format(name))
 os.chdir('db_{0}'.format(name))
 
