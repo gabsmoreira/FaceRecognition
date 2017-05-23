@@ -12,7 +12,7 @@ import sys
 
 number_photos = 100
 
-if __name__ == '__main__':
+def main_database():
     face_cascade = cv2.CascadeClassifier('haarcascade_face.xml')
 
     name = raw_input("Name:")
