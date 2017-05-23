@@ -26,6 +26,8 @@ p = open('pca.p', 'r')
 clf = pickle.load(f)
 pca = pickle.load(p)
 cap = cv2.VideoCapture(0)
+cap.set(cv.CV_CAP_PROP_FRAME_WIDTH, 640)
+cap.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 480)
 
 def prepare_image(image):
     image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -51,6 +53,7 @@ while True:
 
         res = cv2.resize(crop_img,(height, height), interpolation = cv2.INTER_CUBIC)
         prepared_image = prepare_image(res)
+        print(len(prepared_image))
         n = pca.transform(prepared_image)
         pred = clf.predict(n)
         print(pred)
@@ -60,13 +63,6 @@ while True:
 
         cv2.putText(img, person_name, (x+w+5,y+h), fontFace, fontScale, font_color, font_thickness, cv2.CV_AA)
 
-
-        # y_pred = clf.predict(res_flat)
-        # person_name = y_pred[0]
-    ##try:
-        ##cv2.imshow('Imagem Cortada', res)
-    ##except NameError:
-        ##pass
     cv2.imshow('Imagem normal', img)
     k = cv2.waitKey(30) & 0xff
     if k == 27:

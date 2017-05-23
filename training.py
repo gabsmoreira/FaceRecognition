@@ -16,6 +16,7 @@ from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.decomposition import PCA
 from sklearn.svm import SVC
+from database_creator import number_photos
 
 global target_names
 def getTargetNames():
@@ -29,18 +30,18 @@ def getTargetNames():
     return target_names
 
 def getMatrix():
-    mat = np.zeros(((len(target_names))*40,480*480))
+    mat = np.zeros(((len(target_names))*number_photos,480*480))
     os.chdir("database")
 
     #Reading all images in person's database to begin training
     for i in range(len(target_names)):
         os.chdir('db_{0}'.format(target_names[i])) #db_name will be the folder with person's photos
-        for j in range (1,41):
+        for j in range (1,number_photos+1):
             image = cv2.imread('{0}_{1}.jpg'.format(target_names[i],j))
             image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             image_flat_gray = image_gray.flat
-            mat[i*40+j-1] = image_flat_gray
-            if j==40:
+            mat[i*number_photos+j-1] = image_flat_gray
+            if j==number_photos:
                 os.chdir("../")
     return mat
 
@@ -54,18 +55,18 @@ def eigenfaces(mat):
 
 
 def getX(mat):
-    pca = PCA(n_components=100, svd_solver='randomized',whiten=True).fit(mat)
-    X = np.zeros(((len(target_names))*40,480*480))
+    pca = PCA(n_components=number_photos, svd_solver='randomized',whiten=True).fit(mat)
+    X = np.zeros(((len(target_names))*number_photos,480*480))
     for i in range(len(target_names)):
-        for j in range(40):
+        for j in range(number_photos):
             X = pca.transform(mat)
     return X
 
 def getY():
-    y = np.zeros(((len(target_names))*40))
+    y = np.zeros(((len(target_names))*number_photos))
     #Setting one ID for each name
     for i in range(y.shape[0]):
-        y[i] = i//40
+        y[i] = i//number_photos
     return y
 
 def splitTraining(X, y):
@@ -122,6 +123,7 @@ def main_training():
     matrix = getMatrix()
     X = matrix
     y = getY()
+    eigenfaces(X)
     X_train, X_test, y_train, y_test = splitTraining(X, y)
     X_train_pca, X_test_pca, pca = computePCA(X_train, X_test)
     clf = trainSVM(X_train_pca, y_train)
