@@ -101,9 +101,9 @@ def trainSVM(X_train_pca, y_train):
                   'gamma': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1], }
     clf = GridSearchCV(SVC(kernel='rbf', class_weight='balanced'), param_grid)
     clf = clf.fit(X_train_pca, y_train)
-    print("done in %0.3fs" % (time() - t0))
-    print("Best estimator found by grid search:")
-    print(clf.best_estimator_)
+    ##print("done in %0.3fs" % (time() - t0))
+    ##print("Best estimator found by grid search:")
+    ##print(clf.best_estimator_)
     return clf
 
 def predictFace(X_test_pca, y_test, y, classifier = None):

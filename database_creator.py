@@ -13,6 +13,7 @@ import sys
 number_photos = 100
 
 def main_database():
+    local = os.getcwd()
     face_cascade = cv2.CascadeClassifier('haarcascade_face.xml')
 
     name = raw_input("Name:")
@@ -52,5 +53,8 @@ def main_database():
         k = cv2.waitKey(30) & 0xff
         if k == 27:
             break
+            
+    os.chdir(local)
+    print(os.getcwd())
     cap.release()
     cv2.destroyAllWindows()

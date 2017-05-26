@@ -4,13 +4,14 @@ from datetime import datetime
 import training
 import face_recognition
 import database_creator
+from PIL import ImageTk, Image
 
 class Janela_Principal():
 
     def __init__(self):
 
         self.window = tk.Tk()
-        self.window.geometry("250x450+100+100")
+        self.window.geometry("250x400+100+100")
         self.window.title("Face Recoginition")
         self.window.configure(background = 'white')
         self.window.resizable(False, False)
@@ -21,11 +22,12 @@ class Janela_Principal():
         self.window.rowconfigure(2, minsize = 100)
         self.window.rowconfigure(3, minsize = 100)
         self.window.columnconfigure(0, minsize = 250)
+        
 
         #Label
-#        self.Logo = tk.PhotoImage(file = "python_logo.png")
-#        self.Logo_label = tk.Label(self.window, image = self.Logo, height = 1, width = 1)
-#        self.Logo_label.grid(row = 0, column = 0, sticky = "nsew")
+        self.Logo = ImageTk.PhotoImage(Image.open("python_logo.jpeg"))
+        self.Logo_label = tk.Label(self.window, image = self.Logo, height = 1, width = 1)
+        self.Logo_label.grid(row = 0, column = 0, sticky = "nsew")
 
         #Botoes
         self.button_treinar = tk.Button(self.window, text = "TRAIN", height = 3, width = 30)
@@ -36,15 +38,15 @@ class Janela_Principal():
         self.button_Reconhecimento.grid(row   = 2, column = 0)
         self.button_Reconhecimento.configure(command = self.reconhecimento)
 
-
         self.button_Data_Base = tk.Button(self.window, text = "ADD PERSON", height = 3, width = 30)
         self.button_Data_Base.grid(row   = 3, column = 0)
         self.button_Data_Base.configure(command = self.Base)
 
-
+    #Loop do codigo
     def iniciar(self):
         self.window.mainloop()
 
+    #Acoes dos botoes
     def treinar(self):
         training.main_training()
 
@@ -54,5 +56,6 @@ class Janela_Principal():
     def Base(self):
         database_creator.main_database()
 
+#Loop do codigo
 app = Janela_Principal()
 app.iniciar()
