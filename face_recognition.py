@@ -25,8 +25,10 @@ def main():
     print(target_names)
     f = open('clf.p', 'r')
     p = open('pca.p', 'r')
+    g = open('clf_ex.p', 'r')
     clf = pickle.load(f)
     pca = pickle.load(p)
+    clf_ex = pickle.load(g)
     cap = cv2.VideoCapture(0)
     cap.set(cv.CV_CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 480)
@@ -57,20 +59,22 @@ def main():
             prepared_image = prepare_image(res)
             print(len(prepared_image))
             n = pca.transform(prepared_image)
-            #clf = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1)
-           
 
-            distancia = clf.decision_function(n)
-            print("________________________________________________PRINT________________________________________________")
-            soma = distancia.sum()
-            print("________________________________________________PRINT________________________________________________")
-            print(distancia)
+
+            #clf = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1)
             
             pred = clf.predict(n)
-            print(pred)
+            print("____________________________________PRINT____________________________________")
+            pred_contem = clf_ex.predict(n)
+            print(pred_contem)
+            print("____________________________________PRINT____________________________________")
+            
+            if pred_contem < 0 :
+                person_name = "Alguem"
 
-            for i in pred:   
-                    person_name = target_names[int(i)]
+            else:    
+                for i in pred:   
+                     person_name = target_names[int(i)]
 
             cv2.putText(img, person_name, (x+w+5,y+h), fontFace, fontScale, font_color, font_thickness, cv2.CV_AA)
 
