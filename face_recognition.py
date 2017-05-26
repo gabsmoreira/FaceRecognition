@@ -58,18 +58,18 @@ def main():
             print(len(prepared_image))
             n = pca.transform(prepared_image)
             #clf = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1)
-           
+
 
             distancia = clf.decision_function(n)
             print("________________________________________________PRINT________________________________________________")
             soma = distancia.sum()
             print("________________________________________________PRINT________________________________________________")
             print(distancia)
-            
+
             pred = clf.predict(n)
             print(pred)
 
-            for i in pred:   
+            for i in pred:
                     person_name = target_names[int(i)]
 
             cv2.putText(img, person_name, (x+w+5,y+h), fontFace, fontScale, font_color, font_thickness, cv2.CV_AA)
@@ -81,3 +81,5 @@ def main():
 
     cap.release()
     cv2.destroyAllWindows()
+
+#main()
