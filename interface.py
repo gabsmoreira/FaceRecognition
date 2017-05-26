@@ -15,7 +15,7 @@ class Janela_Principal():
     def __init__(self):
 
         self.window = tk.Tk()
-        self.window.geometry("300x300+100+100")
+        self.window.geometry("298x298+100+100")
         self.window.title("Face Recoginition")
         self.window.configure(background = 'white')
         self.window.resizable(False, False)
