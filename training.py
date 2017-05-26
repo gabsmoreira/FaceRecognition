@@ -111,10 +111,13 @@ def trainSVM_Oneclass(X_train_pca, y_train):
     # Train a SVM classification model
     print("Fitting the classifier to the training set")
     t0 = time()
-    param_grid = {'C': [1e3, 5e3, 1e4, 5e4, 1e5],
+    param_grid = {'nu': [0.05, 0.2, 0.6, 0.35, 0.9, 0.5],
                   'gamma': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1], }
-    clf_ex = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1)
-    clf_ex.fit(X_train_pca)
+    clf_ex = GridSearchCV(svm.OneClassSVM(nu=0.1, kernel="rbf"), param_grid, scoring='accuracy')
+    clf_ex.fit(X_train_pca, y_train)
+
+    correct = np.mean(clf_ex.predict(X_train_pca) == 1)
+    print(correct)
     return clf_ex
 
 
@@ -128,7 +131,7 @@ def predictFace(X_test_pca, y_test, y, classifier = None):
     ##print("done in %0.3fs" % (time() - t0))
     #print(classification_report(y_test, y_pred, target_names=target_names))
     #print(confusion_matrix(y_test, y_pred, labels=range(n_classes)))
-    return target_names
+    return y_pred
 
 def main_training():
     target_names = getTargetNames()
@@ -140,16 +143,15 @@ def main_training():
     X_train_pca, X_test_pca, pca = computePCA(X_train, X_test)
     clf = trainSVM(X_train_pca, y_train)
     clf_ex = trainSVM_Oneclass(X_train_pca, y_train)  
-    predictFace(X_test_pca, y_test, y, clf)
+    print(clf_ex)
+    #predictFace(X_test_pca, y_test, y, clf)
     os.chdir("../")
 
-    with open('clf_ex.p', 'w+') as f:
+    with open('clf.p', 'w+') as f:
         pickle.dump(clf, f)
 
-
-    with open('clf.p', 'w+') as g:
+    with open('clf_ex.p', 'w+') as g:
         pickle.dump(clf_ex,g)
-
 
     with open('pca.p','w+') as p:
         pickle.dump(pca,p)

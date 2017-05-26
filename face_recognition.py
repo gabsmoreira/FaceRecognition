@@ -20,7 +20,6 @@ from training import *
 
 def main():
     face_cascade = cv2.CascadeClassifier('haarcascade_face.xml')
-    #main_training()
     target_names = getTargetNames()
     print(target_names)
     f = open('clf.p', 'r')
@@ -60,18 +59,14 @@ def main():
             print(len(prepared_image))
             n = pca.transform(prepared_image)
 
-
-            #clf = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1)
-            
             pred = clf.predict(n)
-            print("____________________________________PRINT____________________________________")
             pred_contem = clf_ex.predict(n)
+            print("____________________________________________________________________")
             print(pred_contem)
-            print("____________________________________PRINT____________________________________")
+            pred = clf.predict(n)
             
             if pred_contem < 0 :
                 person_name = "Alguem"
-
             else:    
                 for i in pred:   
                      person_name = target_names[int(i)]
