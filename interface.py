@@ -9,6 +9,7 @@ import training
 import face_recognition
 import database_creator
 from PIL import ImageTk, Image
+import check_list as cl
 
 class Janela_Principal():
 
@@ -51,14 +52,6 @@ class Janela_Principal():
         self.button_Data_Base.grid(row   = 3, columnspan = 1)
         self.button_Data_Base.configure(command = self.Base)
 
-        #Label(self.window).grid(row=4, column = 0)
-        #e1 = Entry(self.window,)
-        #e1.grid(row=4, column=0)
-
-
-        #self.button_confirm = tk.Button(self.window, text = "CREATE CLASS", height = 4, width = 4)
-        #self.button_confirm.grid(row   = 4, column = 1)
-        #self.button_confirm.configure(command = self.delete)
 
     #Loop do codigo
     def iniciar(self):
@@ -75,7 +68,7 @@ class Janela_Principal():
         database_creator.main_database()
 
     def delete(self):
-        print("delete")
+        cl.create_file(training.getTargetNames(),self.e1.get())
         #database_creator.delete()
 
 #Loop do codigo
