@@ -16,17 +16,19 @@ from sklearn.metrics import confusion_matrix
 from sklearn.decomposition import PCA
 from sklearn.svm import SVC
 from training import *
+import check_list as cl
 
 
 def main():
     face_cascade = cv2.CascadeClassifier('haarcascade_face.xml')
-    #main_training()
     target_names = getTargetNames()
     print(target_names)
     f = open('clf.p', 'r')
     p = open('pca.p', 'r')
+    g = open('clf_ex.p', 'r')
     clf = pickle.load(f)
     pca = pickle.load(p)
+    clf_ex = pickle.load(g)
     cap = cv2.VideoCapture(0)
     cap.set(cv.CV_CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 480)
@@ -40,7 +42,7 @@ def main():
         ret, img = cap.read()
         image = cv2.GaussianBlur(img,(5,5),10)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, 2, 5)
+        faces = face_cascade.detectMultiScale(gray, 1.7, 5)
         #Text that appears next to the rectangle with the person's face_cascade
         fontFace = cv2.FONT_HERSHEY_SIMPLEX
         fontScale = 1
@@ -57,20 +59,15 @@ def main():
             prepared_image = prepare_image(res)
             print(len(prepared_image))
             n = pca.transform(prepared_image)
-            #clf = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1)
-           
 
-            distancia = clf.decision_function(n)
-            print("________________________________________________PRINT________________________________________________")
-            soma = distancia.sum()
-            print("________________________________________________PRINT________________________________________________")
-            print(distancia)
-            
+            pred_contem = clf_ex.predict(n)
             pred = clf.predict(n)
-            print(pred)
 
-            for i in pred:   
-                    person_name = target_names[int(i)]
+            #if pred_contem < 0 :
+            #    person_name = "Alguem"
+            #else:
+            for i in pred:
+                 person_name = target_names[int(i)]
 
             cv2.putText(img, person_name, (x+w+5,y+h), fontFace, fontScale, font_color, font_thickness, cv2.CV_AA)
 

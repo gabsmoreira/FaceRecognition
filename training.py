@@ -17,6 +17,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.decomposition import PCA
 from sklearn.svm import SVC
 from database_creator import number_photos
+from sklearn import svm
 
 global target_names
 def getTargetNames():
@@ -74,9 +75,7 @@ def splitTraining(X, y):
     return X_train, X_test, y_train, y_test
 
 def computePCA(X_train, X_test):
-    # Compute a PCA (eigenfaces) on the face dataset (treated as unlabeled
-    # dataset): unsupervised feature extraction / dimensionality reduction
-    n_components = 60
+    n_components = 90
     print("Extracting the top %d eigenfaces from %d faces"
           % (n_components, len(X_train)))
     t0 = time()
@@ -100,40 +99,39 @@ def trainSVM(X_train_pca, y_train):
     param_grid = {'C': [1e3, 5e3, 1e4, 5e4, 1e5],
                   'gamma': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1], }
     clf = GridSearchCV(SVC(kernel='rbf', class_weight='balanced'), param_grid)
-    clf = clf.fit(X_train_pca, y_train)
-    ##print("done in %0.3fs" % (time() - t0))
-    ##print("Best estimator found by grid search:")
-    ##print(clf.best_estimator_)
+    clf.fit(X_train_pca, y_train)
     return clf
 
-def predictFace(X_test_pca, y_test, y, classifier = None):
-    clf = classifier
-    # Quantitative evaluation of the model quality on the test set
-    n_classes = len(target_names)
-    print("Predicting people's names on the test set")
+def trainSVM_Oneclass(X_train_pca, y_train):
+    # Train a SVM classification model
+    print("Fitting the classifier to the training set")
     t0 = time()
-    y_pred = clf.predict(X_test_pca)
-    ##print("done in %0.3fs" % (time() - t0))
-    #print(classification_report(y_test, y_pred, target_names=target_names))
-    #print(confusion_matrix(y_test, y_pred, labels=range(n_classes)))
-    return target_names
+    param_grid = {'nu': [0.13, 0.3, 0.6, 0.35, 0.9, 0.5],
+                  'gamma': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1], }
+    clf_ex = GridSearchCV(svm.OneClassSVM(nu=0.1, kernel="rbf"), param_grid, scoring='accuracy')
+    clf_ex.fit(X_train_pca, y_train)
+
+    correct = np.mean(clf_ex.predict(X_train_pca) == 1)
+    print(correct)
+    return clf_ex
 
 def main_training():
     target_names = getTargetNames()
     matrix = getMatrix()
     X = matrix
     y = getY()
-    eigenfaces(X)
     X_train, X_test, y_train, y_test = splitTraining(X, y)
     X_train_pca, X_test_pca, pca = computePCA(X_train, X_test)
     clf = trainSVM(X_train_pca, y_train)
-    predictFace(X_test_pca, y_test, y, clf)
+    clf_ex = trainSVM_Oneclass(X_train_pca, y_train)
+    print(clf_ex)
     os.chdir("../")
 
-    f = open('clf.p', 'w+')
-    p = open('pca.p','w+')
+    with open('clf.p', 'w+') as f:
+        pickle.dump(clf, f)
 
-    #pickle.dump(clf, f)
-    pickle.dump(clf, f)
-    pickle.dump(pca,p)
-    f.close()
+    with open('clf_ex.p', 'w+') as g:
+        pickle.dump(clf_ex,g)
+
+    with open('pca.p','w+') as p:
+        pickle.dump(pca,p)
