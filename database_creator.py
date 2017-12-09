@@ -14,7 +14,7 @@ number_photos = 100
 
 def main_database():
     local = os.getcwd()
-    face_cascade = cv2.CascadeClassifier('haarcascade_face.xml')
+    face_cascade = cv2.CascadeClassifier('loaders/haarcascade_face.xml')
 
     name = raw_input("Name:")
     i=0

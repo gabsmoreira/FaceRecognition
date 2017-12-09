@@ -20,12 +20,12 @@ import check_list as cl
 
 
 def main():
-    face_cascade = cv2.CascadeClassifier('haarcascade_face.xml')
+    face_cascade = cv2.CascadeClassifier('loaders/haarcascade_face.xml')
     target_names = getTargetNames()
     print(target_names)
-    f = open('clf.p', 'r')
-    p = open('pca.p', 'r')
-    g = open('clf_ex.p', 'r')
+    f = open('loaders/clf.p', 'r')
+    p = open('loaders/pca.p', 'r')
+    g = open('loaders/clf_ex.p', 'r')
     clf = pickle.load(f)
     pca = pickle.load(p)
     clf_ex = pickle.load(g)
@@ -75,6 +75,9 @@ def main():
         k = cv2.waitKey(30) & 0xff
         if k == 27:
             break
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break   
 
     cap.release()
     cv2.destroyAllWindows()

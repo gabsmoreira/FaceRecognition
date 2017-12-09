@@ -16,25 +16,20 @@ class Janela_Principal():
     def __init__(self):
 
         self.window = tk.Tk()
-        self.window.geometry("298x298+100+100")
-        self.window.title("Face Recoginition")
+        self.window.geometry("300x400+100+100")
+        self.window.title("Face Recognition")
         self.window.configure(background = 'white')
         self.window.resizable(False, False)
 
         # Geometria da pagina
         self.window.rowconfigure(0, minsize = 100)
-        self.window.rowconfigure(1, minsize = 10)
-        self.window.rowconfigure(2, minsize = 10)
-        self.window.rowconfigure(3, minsize = 10)
-        self.window.rowconfigure(4, minsize = 10)
-        self.window.columnconfigure(0, minsize = 10)
-        self.window.columnconfigure(1, minsize = 10)
-
-
-
-
+        self.window.rowconfigure(1, minsize = 100)
+        self.window.rowconfigure(2, minsize = 100)
+        self.window.rowconfigure(3, minsize = 100)
+        self.window.columnconfigure(0, minsize = 300)
+       
         #Label
-        self.Logo = ImageTk.PhotoImage(Image.open("python_logo.jpeg"))
+        self.Logo = ImageTk.PhotoImage(Image.open("img/python_logo.jpeg"))
         self.Logo_label = tk.Label(self.window, image = self.Logo, height = 1, width = 1)
         self.Logo_label.grid(row = 0, column = 0, sticky = "nsew")
 

@@ -127,11 +127,11 @@ def main_training():
     print(clf_ex)
     os.chdir("../")
 
-    with open('clf.p', 'w+') as f:
+    with open('loaders/clf.p', 'w+') as f:
         pickle.dump(clf, f)
 
-    with open('clf_ex.p', 'w+') as g:
+    with open('loaders/clf_ex.p', 'w+') as g:
         pickle.dump(clf_ex,g)
 
-    with open('pca.p','w+') as p:
+    with open('loaders/pca.p','w+') as p:
         pickle.dump(pca,p)
